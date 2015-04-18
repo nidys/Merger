@@ -5,18 +5,13 @@ import ply.yacc as yacc
 from ast import *
 
 translationUnit = None
-# reserved = {
-#     'int' : 'INT_TYPE'
-# }
 
 reservedTokends = [r'INT_TYPE']
 
 tokens = [r'SCOLON'
           ,r'INT'
           ,r'ID'
-          # , r'WHITE_SPACE'
           ] + reservedTokends
-         # + list(reserved.values())
 
 t_SCOLON = r';'
 
@@ -30,7 +25,7 @@ def t_INT(t):
     return t
 
 def t_ID(t):
-    r'[ \t]*[a-zA-Z][a-zA-Z_0-9]*'
+    r'[ \t\n]*[a-zA-Z][a-zA-Z_0-9]*'
     return t
 
 def t_newline(t):
@@ -80,10 +75,11 @@ class Parser(object):
         self._filename = fileName
     def parseFile(self, srcCode):
         try:
-            # print srcCode
             lexer = lex.lex(debug=False)
             parser = yacc.yacc(debug=False)
             parser.parse(srcCode, lexer=lexer)
+            global translationUnit
+            return translationUnit
         except Exception as e:
             print e
             raise e
@@ -99,8 +95,7 @@ if __name__ == '__main__':
         fd = open(fileName, "r")
         programAst = Parser(fileName).parseFile(fd.read())
         fd.close()
-        global translationUnit
-        print "Success, translated = %s" % translationUnit
+        print "Success, translated = %s" % programAst
     except Exception as e:
         print "Failure"
         print e

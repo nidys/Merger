@@ -1,11 +1,17 @@
-__author__ = 'nidys'
-
 class Translation_unit(object):
     def __init__(self, external_decl=''):
         self.external_decl = external_decl
 
     def __str__(self):
         return str(self.external_decl)
+
+    def getWhisteSpaceSeparated(self, value):
+        import re
+        match = re.search(r'[ \t\n]*', value)
+        if match:
+            wSpacesLength = len(match.group())
+            return value[:wSpacesLength],value[wSpacesLength:]
+        return '', value
 
 class External_decl(object):
     def __init__(self, decl=''):
@@ -39,12 +45,11 @@ class Type_spec(object):
     def __str__(self):
         return self.type + str(self.typedef_name)
 
-class Typedef_name(object):
+class Typedef_name(Translation_unit):
     def __init__(self, id):
-        #TODO separate white spaces
-        self.id = id
+        self.whiteSpaces, self.id = self.getWhisteSpaceSeparated(id)
 
     def __str__(self):
-        return self.id
+        return self.whiteSpaces + self.id
 
 
