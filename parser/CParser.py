@@ -32,7 +32,7 @@ def t_newline(t):
     r'\r*\n+'
 
 def t_error(t):
-    print('Illegal character')
+    print('#Illegal character')
 
 #################################################################
 def p_translation_unit(p):
@@ -68,7 +68,7 @@ def p_typedef_name(p):
     p[0] = Typedef_name(id=p[1])
 
 def p_error(p):
-    print("Lexic token problem")
+    print("#Lexic token problem")
 #################################################################
 class Parser(object):
     def __init__(self, fileName):
@@ -97,6 +97,5 @@ if __name__ == '__main__':
         fd.close()
         print "Success, translated = %s" % programAst
     except Exception as e:
-        print "Failure"
-        print e
+        print "Failure:" +str(e)
     print "Good byte..."
