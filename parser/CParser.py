@@ -88,7 +88,7 @@ class Parser(object):
 #################################################################
 if __name__ == '__main__':
     try:
-        fileName = os.getcwd()[:-6] + os.sep + 'inputs' + os.sep + '1_1.c'
+        fileName = os.getcwd()[:-6] + os.sep + 'inputs' + os.sep + '1.c'
         print "Usage: python source_file[default= %s]" % fileName
         if len(sys.argv) > 1:
             fileName = sys.argv[1]
