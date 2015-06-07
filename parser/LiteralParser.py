@@ -1,30 +1,23 @@
-import os
-import sys
-import re
-
 class LiteralParser(object):
-    def getWhisteSpaceSeparated(self, value):
-        match = re.search(r'[ \t\n]*', value)
-        if match:
-            wSpacesLength = len(match.group())
-            return value[:wSpacesLength],value[wSpacesLength:]
-        return '', value
+    def __init__(self, sourceCode):
+        # print(sourceCode)
+        self.lines = sourceCode.split('\n')
+        self.lineNo = 0;
 
-    def parse(self, sourceCode):
-        pass
+    def getBlock(self):
+        if self.hasNextBlock():
+            line = self.lines[self.lineNo]
+            self.lineNo += 1
+            return line
+        return ''
 
+    def getRest(self):
+        result = ''
+        if self.hasNextBlock():
+            result = self.getBlock()
+        while self.hasNextBlock():
+            result += '\n' + self.getBlock()
+        return result
 
-
-# if __name__ == '__main__':
-#     try:
-#         fileName = os.getcwd()[:-6] + os.sep + 'inputs' + os.sep + '1.c'
-#         print "Usage: python source_file[default= %s]" % fileName
-#         if len(sys.argv) > 1:
-#             fileName = sys.argv[1]
-#         fd = open(fileName, "r")
-#         programAst = Parser(fileName).parseFile(fd.read())
-#         fd.close()
-#         print "Success, translated = %s" % programAst
-#     except Exception as e:
-#         print "Failure:" +str(e)
-#     print "Good byte..."
+    def hasNextBlock(self):
+        return self.lineNo < len(self.lines)

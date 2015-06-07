@@ -1,15 +1,40 @@
+from LiteralParser import LiteralParser
+
 class Merger(object):
     def hasBothNextBlock(self):
-        return False
+        return (self.firstCode.hasNextBlock() and self.secondCode.hasNextBlock())
+
     def isBlockConflict(self):
-        return False
+        self.firstBlock = self.firstCode.getBlock()
+        self.secondBlock = self.secondCode.getBlock()
+        return self._isBlockConflict()
+
     def getBlockOfFirst(self):
+        if self._isBlockConflict():
+            return self.firstBlock
         return ''
+
     def getBlockOfSecond(self):
+        if self._isBlockConflict():
+            return self.secondBlock
         return ''
+
     def getBlockOfThird(self):
-        return ''
+        if self._isBlockConflict():
+            return ''
+        return self.firstBlock
+
     def parseFirst(self, sourceCode):
-        pass
+        self.firstCode = LiteralParser(sourceCode)
+
     def parserSecond(self, sourceCode):
-        pass
+        self.secondCode = LiteralParser(sourceCode)
+
+    def getRestOfFirstBlock(self):
+        return self.firstCode.getRest()
+
+    def getRestOfSecondBlock(self):
+        return self.secondCode.getRest()
+
+    def _isBlockConflict(self):
+        return (self.firstBlock != self.secondBlock)
