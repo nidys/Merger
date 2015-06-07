@@ -12,12 +12,12 @@ class Merger(object):
     def getBlockOfFirst(self):
         if self._isBlockConflict():
             return self.firstBlock
-        return ''
+        return self.firstBlock # ulatwi mi to sporo
 
     def getBlockOfSecond(self):
         if self._isBlockConflict():
             return self.secondBlock
-        return ''
+        return self.secondBlock
 
     def getBlockOfThird(self):
         if self._isBlockConflict():
