@@ -34,17 +34,21 @@ def merge_test(fileName1, fileName2):
     file1.close()
     file2.close()
 
+    conflictCounter = 0
+
     while merger.hasBothNextBlock():
         if merger.isBlockConflict():
             print(r'Conflict=#%s#%s#' % (merger.getBlockOfFirst(), merger.getBlockOfSecond()))
+            conflictCounter += 1
         else:
             print('Merged  =#%s#' % merger.getBlockOfThird())
     print('First rest=' + merger.getRestOfFirstBlock())
     print('Second rest=' + merger.getRestOfSecondBlock())
+    print('Num of conflicts:' + str(conflictCounter))
 
 
 if __name__ == '__main__':
-    fileName1 = os.getcwd()[:-6] + 'inputs' + os.sep + '1_1.c'
-    fileName2 = os.getcwd()[:-6] + 'inputs' + os.sep + '1_2.c'
+    fileName1 = os.getcwd()[:-7] + 'inputs' + os.sep + '1_1.c'
+    fileName2 = os.getcwd()[:-7] + 'inputs' + os.sep + '1_2.c'
     # test(fileName1, fileName2)
     merge_test(fileName1, fileName2)

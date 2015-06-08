@@ -37,4 +37,4 @@ class Merger(object):
         return self.secondCode.getRest()
 
     def _isBlockConflict(self):
-        return (self.firstBlock != self.secondBlock)
+        return (self.firstBlock == self.secondBlock) == False
