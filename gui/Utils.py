@@ -37,6 +37,10 @@ def addTextToCodeView(codeView, str):
     end = buff.get_end_iter().get_offset()
     return {'start': start, 'end': end}
 
+def insertText(codeView, str, offset):
+    buff = codeView.get_buffer()
+    buff.insert(buff.get_iter_at_offset(offset), str)
+
 def addTags(codeView):
     buff = codeView.get_buffer()
     tag = gtk.TextTag(name="conflict")
@@ -63,3 +67,11 @@ def removeTag(codeView, tag, start, end):
 def getText(codeView, start, end):
     buff = codeView.get_buffer()
     return buff.get_text(buff.get_iter_at_offset(start), buff.get_iter_at_offset(end))
+
+def removeElementsFromConflictsList(firstConflicts, secondConflicts, meregerConflicts, index):
+    firstConflicts.remove(firstConflicts[index])
+    firstConflicts.reverse()
+    secondConflicts.remove(secondConflicts[index])
+    secondConflicts.reverse()
+    meregerConflicts.remove(meregerConflicts[index])
+    meregerConflicts.reverse()
