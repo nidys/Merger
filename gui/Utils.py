@@ -70,8 +70,5 @@ def getText(codeView, start, end):
 
 def removeElementsFromConflictsList(firstConflicts, secondConflicts, meregerConflicts, index):
     firstConflicts.remove(firstConflicts[index])
-    firstConflicts.reverse()
     secondConflicts.remove(secondConflicts[index])
-    secondConflicts.reverse()
     meregerConflicts.remove(meregerConflicts[index])
-    meregerConflicts.reverse()
