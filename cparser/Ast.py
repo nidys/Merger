@@ -37,7 +37,8 @@ class MacroInclude(Unit):
 
     def __eq__(self, other):
         if isinstance(other, MacroInclude):
-            return self.firstpart == other.firstpart and self.secondPart == other.secondPart
+            return self.firstpart == other.firstpart and \
+                   self.secondPart == other.secondPart
         return False
 
     def getLen(self):
@@ -76,7 +77,8 @@ class MacroDefine(Unit):
 
     def __eq__(self, other):
         if isinstance(other, MacroDefine):
-            return self.firstpart == other.firstpart and self.secondPart == other.secondPart
+            return self.firstpart == other.firstpart and \
+                   self.secondPart == other.secondPart
         return False
 
     def getLen(self):
@@ -121,8 +123,8 @@ class EmbeddedSimpleVariableDeclaration(Unit):
         if isinstance(other, EmbeddedSimpleVariableDeclaration):
             return self.type == other.type and \
                    self.name == other.name and \
-                   self.myOperator == self.myOperator and \
-                   self.value == self.value
+                   self.myOperator == other.myOperator and \
+                   self.value == other.value
         return False
 
 
@@ -144,16 +146,56 @@ class EmbeddedSimpleVariableDeclaration(Unit):
                                                      m.group(7), m.group(8), '', m.group(9))
         return None
 
-############### TODO delete this
-if __name__ == '__main__':
-    # u = Unit('u')
-    # d1 = MacroInclude('a', 'b', 'c')
-    # d2 = MacroInclude('a', 'b', 'c')
-    # print d1 == d2
-    # print d1 == u
-    # print MacroDefine.getThis('#define ab')
 
-    t = 'double   da;'
-    m = re.match(r'(int|double|float|long|char)(\s+)(\S+)(;)', t)
+class FunctionFirstBracerDetector(Unit):
+    def __init__(self, ws0, type, ws1, name, leftParenthesis, content, rightParenthesis, ws2, leftbuckle):
+        self.ws0 = ws0
+        self.type = type
+        self.ws1 = ws1
+        self.name = name
+        self.leftParenthesis = leftParenthesis
+        self.content = content
+        self.rightParenthesis = rightParenthesis
+        self.ws2 = ws2
+        self.leftbuckle = leftbuckle
+
+    def __str__(self):
+        return self.ws0 + self.type + self.ws1 + self.name + self.leftParenthesis + \
+               self.content + self.rightParenthesis + self.ws2 + self.leftbuckle
+
+
+    def __eq__(self, other):
+        if isinstance(other, FunctionFirstBracerDetector):
+            return self.type == other.type and \
+                   self.name == other.name and \
+                   self.leftParenthesis == other.leftParenthesis and \
+                   self.content == other.content
+        return False
+
+
+    def getLen(self):
+        return len(self.ws0 + self.type + self.ws1 + self.name + self.leftParenthesis + \
+                   self.content + self.rightParenthesis + self.ws2 + self.leftbuckle)
+
+    @staticmethod
+    def getThis(line):
+        m = re.match(r'(int|double|float|long|char|void)(\s+)(\S+)(\()(.*)(\))(\s+)({)', line)
+        if m:
+            return FunctionFirstBracerDetector('', m.group(1), m.group(2), m.group(3), \
+                                               m.group(4), m.group(5), m.group(6), \
+                                               m.group(7), m.group(8))
+        m = re.match(r'(\s+)(int|double|float|long|char|void)(\s+)(\S+)(\()(.*)(\))(\s+)({)', line)
+        if m:
+            return FunctionFirstBracerDetector(m.group(1), m.group(2), m.group(3), \
+                                               m.group(4), m.group(5), m.group(6), \
+                                               m.group(7), m.group(8), m.group(9))
+        return None
+
+###############
+if __name__ == '__main__':
+    # t = 'double    ff(int a, int b)\t\n {'
+    t = 'void usage() ' \
+        '{'
+    m = re.match(r'(int|double|float|long|char|void)(\s+)(\S+)(\()(.*)(\))(\s+)({)', t)
     if m: print '#' + m.group() + '#'
     print 'koniec'

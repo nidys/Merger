@@ -38,6 +38,10 @@ class LiteralParser(object):
         #######################################
 
         while len(code) > 0:
+            (result, tmpCode) = addFunctionFirstBuckle(self.lines, code)
+            if (result == True):
+                code = tmpCode
+                continue
             (result, tmpCode) = addMacroInclude(self.lines, code)
             if (result == True):
                 code = tmpCode

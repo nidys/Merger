@@ -57,4 +57,9 @@ def addSimpleDefinition(lines, code):
         return (True, code[tmp.getLen() + 1:])
     return (False, code)
 
-
+def addFunctionFirstBuckle(lines, code):
+    tmp = FunctionFirstBracerDetector.getThis(code)
+    if tmp != None:
+        lines.append(tmp)
+        return (True, code[tmp.getLen() + 1:])
+    return (False, code)

@@ -1,6 +1,4 @@
 /*
-
-
  ============================================================================
  Name        : zad2.c
  Author      : PiotrNiedrygas
@@ -9,16 +7,13 @@
  Description : zad2 in C, Ansi-style
  ============================================================================
  */
-#include<stdio.h>
-    #include
-    <stdlib.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <sys/types.h>
-#include
-  <signal.h>
-#include<unistd.h>
+#include <signal.h>
+#include <unistd.h>
 #include <string.h>
-
-        #define ABC
+#define ABC
 
 void usage() {
 	printf("[nazwa][pid_do ktorego przesle][kill/queue][opcjonalnie-dla-queue-ilosc]\n");
@@ -47,7 +42,7 @@ int main(int argc, char *argv[]) {
 		usage();
 		exit(1);
 	}
-
+    int i = 5;
 	if (option == 0) {
 		if (kill(pid, SIGUSR1) != 0)
 			perror("Blad killa\n");
