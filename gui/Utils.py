@@ -72,4 +72,3 @@ def removeElementsFromConflictsList(firstConflicts, secondConflicts, meregerConf
     firstConflicts.remove(firstConflicts[index])
     secondConflicts.remove(secondConflicts[index])
     meregerConflicts.remove(meregerConflicts[index])
-
