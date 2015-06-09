@@ -4,23 +4,6 @@ from Ast import *
 def indexOfFirstChar(str):
     return len(str) - len(str.lstrip())
 
-
-# def getSplitedByNextLine(lines, code):
-# newLineIdx = code.index('\n')
-#     fragment = code[:newLineIdx]
-#     return (fragment, code[newLineIdx+1:])
-#
-# def skipNextLines(lines, code):
-#     while True:
-#         (fragment, code) = getSplitedByNextLine(lines, code)
-#         if containsOnlyWhiteSpaces(fragment):
-#             lines.append(Unit(fragment + '\n'))
-#         elif fragment == '' and len(code) > 0:
-#
-#         else:
-#             lines.append(Unit(fragment))
-#             return code
-
 def getSplitedByNextLine(code):
     newLineIdx = code.index('\n')
     fragment = code[:newLineIdx]
@@ -62,6 +45,13 @@ def addMacroInclude(lines, code):
 
 def addMacroDefine(lines, code):
     tmp = MacroDefine.getThis(code)
+    if tmp != None:
+        lines.append(tmp)
+        return (True, code[tmp.getLen() + 1:])
+    return (False, code)
+
+def addSimpleDefinition(lines, code):
+    tmp = EmbeddedSimpleVariableDeclaration.getThis(code)
     if tmp != None:
         lines.append(tmp)
         return (True, code[tmp.getLen() + 1:])

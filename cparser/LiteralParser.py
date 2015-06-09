@@ -1,6 +1,7 @@
 from Ast import *
 from RegexpUtils import *
 
+
 class LiteralParser(object):
     def __init__(self, sourceCode):
         # print(sourceCode)
@@ -38,11 +39,15 @@ class LiteralParser(object):
 
         while len(code) > 0:
             (result, tmpCode) = addMacroInclude(self.lines, code)
-            if(result == True):
+            if (result == True):
                 code = tmpCode
                 continue
             (result, tmpCode) = addMacroDefine(self.lines, code)
-            if(result == True):
+            if (result == True):
+                code = tmpCode
+                continue
+            (result, tmpCode) = addSimpleDefinition(self.lines, code)
+            if (result == True):
                 code = tmpCode
                 continue
 

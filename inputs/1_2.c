@@ -26,8 +26,12 @@ void usage() {
 
 int main(int argc, char *argv[]) {
 	printf("pid = %d\n", (int) getpid());
-	int pid;
-	int option = 1;
+	int
+
+	pid;
+	int option
+	 =
+	  1;
 	int val;
 	if (argc == 3) {
 		if (strcmp(argv[2], "kill") != 0) {
