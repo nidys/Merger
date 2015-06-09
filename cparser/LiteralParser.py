@@ -37,7 +37,11 @@ class LiteralParser(object):
         #######################################
 
         while len(code) > 0:
-            (result, tmpCode) = addDefineInclude(self.lines, code)
+            (result, tmpCode) = addMacroInclude(self.lines, code)
+            if(result == True):
+                code = tmpCode
+                continue
+            (result, tmpCode) = addMacroDefine(self.lines, code)
             if(result == True):
                 code = tmpCode
                 continue

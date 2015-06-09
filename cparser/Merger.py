@@ -11,18 +11,18 @@ class Merger(object):
 
     def getBlockOfFirst(self):
         if self._isBlockConflict():
-            return self.firstBlock
-        return self.firstBlock # ulatwi mi to sporo
+            return str(self.firstBlock)
+        return str(self.firstBlock) # ulatwi mi to sporo
 
     def getBlockOfSecond(self):
         if self._isBlockConflict():
-            return self.secondBlock
-        return self.secondBlock
+            return str(self.secondBlock)
+        return str(self.secondBlock)
 
     def getBlockOfThird(self):
         if self._isBlockConflict():
             return ''
-        return self.firstBlock
+        return str(self.firstBlock)
 
     def parseFirst(self, sourceCode):
         self.firstCode = LiteralParser(sourceCode)
@@ -31,10 +31,10 @@ class Merger(object):
         self.secondCode = LiteralParser(sourceCode)
 
     def getRestOfFirstBlock(self):
-        return self.firstCode.getRest()
+        return str(self.firstCode.getRest())
 
     def getRestOfSecondBlock(self):
-        return self.secondCode.getRest()
+        return str(self.secondCode.getRest())
 
     def _isBlockConflict(self):
         return (self.firstBlock == self.secondBlock) == False

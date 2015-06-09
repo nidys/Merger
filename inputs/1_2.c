@@ -14,6 +14,8 @@
 #include <unistd.h>
 #include <string.h>
 
+#define ABC
+
 void usage() {
 	printf("[nazwa][pid_do ktorego przesle][kill/queue][opcjonalnie-dla-queue-ilosc]\n");
 }

@@ -7,12 +7,16 @@
  Description : zad2 in C, Ansi-style
  ============================================================================
  */
-#include <stdio.h>
-#include <stdlib.h>
+#include<stdio.h>
+    #include
+    <stdlib.h>
 #include <sys/types.h>
-#include <signal.h>
-#include <unistd.h>
+#include
+  <signal.h>
+#include<unistd.h>
 #include <string.h>
+
+        #define ABC
 
 void usage() {
 	printf("[nazwa][pid_do ktorego przesle][kill/queue][opcjonalnie-dla-queue-ilosc]\n");
