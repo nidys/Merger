@@ -4,31 +4,25 @@ import gtk
 import sys
 from cparser.Merger import Merger
 from Utils import setCodeTextFromFile, saveToFile, getTextFromTextView, setCodeText, addTags, addTextToCodeView, \
-    setConflicts, setTag, removeTag, getText
+    setConflicts, setTag, removeTag, getText, insertText, removeElementsFromConflictsList
 
 class CMergerUI:
 
     firstConflicts = []
     secondConflicts = []
     mergerConflicts = []
-    currentConflict = 0
-    codeView_1 = ''
+    currentConflict = -1
+    firstCodeView = None
+    secondCodeView = None
+    mergerCodeView = None
 
     def addTags(self, index, tag):
-        setTag(self.builder.get_object("codeViewOfFirst"), tag, self.firstConflicts[index]['start'],
-               self.firstConflicts[index]['end'])
-        setTag(self.builder.get_object("codeViewOfSecond"), tag, self.secondConflicts[index]['start'],
-               self.secondConflicts[index]['end'])
-        setTag(self.builder.get_object("codeViewOfMerged"), tag, self.mergerConflicts[index]['start'],
-               self.mergerConflicts[index]['end'])
+        setTag(self.firstCodeView, tag, self.firstConflicts[index]['start'], self.firstConflicts[index]['end'])
+        setTag(self.secondCodeView, tag, self.secondConflicts[index]['start'], self.secondConflicts[index]['end'])
 
     def removeTags(self, index, tag):
-        removeTag(self.builder.get_object("codeViewOfFirst"), tag, self.firstConflicts[index]['start'],
-               self.firstConflicts[index]['end'])
-        removeTag(self.builder.get_object("codeViewOfSecond"), tag, self.secondConflicts[index]['start'],
-               self.secondConflicts[index]['end'])
-        removeTag(self.builder.get_object("codeViewOfMerged"), tag, self.mergerConflicts[index]['start'],
-               self.mergerConflicts[index]['end'])
+        removeTag(self.firstCodeView, tag, self.firstConflicts[index]['start'], self.firstConflicts[index]['end'])
+        removeTag(self.secondCodeView, tag, self.secondConflicts[index]['start'], self.secondConflicts[index]['end'])
 
     def on_window1_destroy(self, object, data=None):
         print "quit with cancel"
@@ -44,7 +38,7 @@ class CMergerUI:
             filename = self.chooseFile("open")
             if filename is not None:
                 fc.set_filename(filename)
-                setCodeTextFromFile(self.builder.get_object("codeViewOfFirst"), filename)
+                setCodeTextFromFile(self.firstCodeView, filename)
         self.choosenCode("first")
 
     def on_codeViewOfSecond_button_release_event(self, textView, e):
@@ -53,7 +47,7 @@ class CMergerUI:
             filename = self.chooseFile("open")
             if filename is not None:
                 fc.set_filename(filename)
-                setCodeTextFromFile(self.builder.get_object("codeViewOfSecond"), filename)
+                setCodeTextFromFile(self.secondCodeView, filename)
         self.choosenCode("second")
 
     def on_chooseButtonOfFirst_clicked(self, widget):
@@ -63,22 +57,41 @@ class CMergerUI:
         self.choosenCode("second")
 
     def choosenCode(self, str):
-        if str == 'first':
-            start = self.firstConflicts[self.currentConflict]['start']
-            end = self.firstConflicts[self.currentConflict]['end']
-            print "1: " + getText(self.builder.get_object("codeViewOfFirst"), start, end)
-        else:
-            start = self.secondConflicts[self.currentConflict]['start']
-            end = self.secondConflicts[self.currentConflict]['end']
-            print "2: " + getText(self.builder.get_object("codeViewOfSecond"), start, end)
+        if self.currentConflict != -1:
+            if str == 'first':
+                self.choosenOne(self.firstCodeView, self.firstConflicts, self.secondCodeView, self.secondConflicts)
+            else:
+                self.choosenOne(self.secondCodeView, self.secondConflicts, self.firstCodeView, self.firstConflicts)
+
+
+    def choosenOne(self, choosenView, choosenList, otherView, otherList):
+        start = choosenList[self.currentConflict]['start']
+        end = choosenList[self.currentConflict]['end']
+        str = getText(choosenView, start, end)
+        insertText(self.mergerCodeView, str,
+                   self.mergerConflicts[self.currentConflict]['start'])
+        offset = end - start
+        for i in range(self.currentConflict + 1, self.mergerConflicts.__len__()):
+            self.mergerConflicts[i]['start'] += offset
+
+        removeTag(choosenView, 'current', start, end)
+        removeTag(choosenView, 'conflict', start, end)
+        start = otherList[self.currentConflict]['start']
+        end = otherList[self.currentConflict]['end']
+        removeTag(otherView, 'current', start, end)
+        removeTag(otherView, 'conflict', start, end)
+        removeElementsFromConflictsList(choosenList, otherList, self.mergerConflicts,
+                                        self.currentConflict)
+        self.currentConflict = -1
 
     def on_fileChooserOfFirst_file_set(self, widget):
-        setCodeTextFromFile(self.builder.get_object("codeViewOfFirst"), widget.get_filename())
+        setCodeTextFromFile(self.firstCodeView, widget.get_filename())
 
     def on_fileChooserOfSecond_file_set(self, widget):
-          setCodeTextFromFile(self.builder.get_object("codeViewOfSecond"), widget.get_filename())
+          setCodeTextFromFile(self.secondCodeView, widget.get_filename())
 
     def on_firstToolButton_clicked(self, widget):
+        if self.firstConflicts.__len__() > 0:
             self.removeTags(self.currentConflict, 'current')
             self.currentConflict = 0
             self.addTags(self.currentConflict, 'current')
@@ -96,13 +109,14 @@ class CMergerUI:
             self.addTags(self.currentConflict, 'current')
 
     def on_lastToolButton_clicked(self, widget):
+        if self.firstConflicts.__len__() > 0:
             self.removeTags(self.currentConflict, 'current')
             self.currentConflict = self.firstConflicts.__len__() - 1
             self.addTags(self.currentConflict, 'current')
 
     def on_mergeToolButton_clicked(self, widget):
-        cv_1 = self.builder.get_object("codeViewOfFirst")
-        cv_2 = self.builder.get_object("codeViewOfSecond")
+        cv_1 = self.firstCodeView
+        cv_2 = self.secondCodeView
         str_1 = getTextFromTextView(cv_1)
         str_2 = getTextFromTextView(cv_2)
         if str_1 != '' and str_2 != '':
@@ -110,7 +124,7 @@ class CMergerUI:
             setCodeText(cv_1, '')
             setCodeText(cv_2, '')
             merger = Merger()
-            mergerView = self.builder.get_object("codeViewOfMerged")
+            mergerView = self.mergerCodeView
             setCodeText(mergerView, '')
             merger.parseFirst(str_1)
             merger.parserSecond(str_2)
@@ -119,7 +133,8 @@ class CMergerUI:
                 if merger.isBlockConflict():
                     self.firstConflicts.append(addTextToCodeView(cv_1, merger.getBlockOfFirst() + '\n'))
                     self.secondConflicts.append(addTextToCodeView(cv_2, merger.getBlockOfSecond() + '\n'))
-                    self.mergerConflicts.append(addTextToCodeView(mergerView, '     \n'))
+                    offset = self.mergerCodeView.get_buffer().get_end_iter().get_offset()
+                    self.mergerConflicts.append({'start': offset, 'end': offset})
                 else:
                     addTextToCodeView(cv_1, merger.getBlockOfFirst() + '\n')
                     addTextToCodeView(cv_2, merger.getBlockOfSecond() + '\n')
@@ -134,7 +149,6 @@ class CMergerUI:
             setConflicts(mergerView, self.mergerConflicts)
             setConflicts(cv_1, self.firstConflicts)
             setConflicts(cv_2, self.secondConflicts)
-        print "mergeToolButton"
 
     def setToolButtonsActive(self, active):
         self.builder.get_object("firstToolButton").set_sensitive(active)
@@ -149,21 +163,24 @@ class CMergerUI:
         self.setToolButtonsActive(False)
         self.builder.get_object("fileChooserOfFirst").unselect_all()
         self.builder.get_object("fileChooserOfSecond").unselect_all()
-        setCodeTextFromFile(self.builder.get_object("codeViewOfFirst"))
-        setCodeTextFromFile(self.builder.get_object("codeViewOfSecond"))
+        # mi = self.builder.get_object("menuitem1")
+        # mi.builder.get_object("menu1")
+        setCodeText(self.firstCodeView, '')
+        setCodeText(self.secondCodeView, '')
+        setCodeText(self.mergerCodeView, '')
 
     def on_saveAsMenuItem_activate(self, arg):
         filename = self.chooseFile("save")
         if filename is not None:
             self.file = filename
             print self.file
-            saveToFile(filename, "test")
+            saveToFile(filename, getTextFromTextView(self.mergerCodeView))
 
     def on_saveMenuItem_activate(self, arg):
         if not hasattr(self, 'file'):
             self.on_saveAsMenuItem_activate(arg)
         else:
-            saveToFile(self.file, "test2")
+            saveToFile(self.file, getTextFromTextView(self.mergerCodeView))
 
     def on_saveToolButton_clicked(self, widget):
         self.on_saveMenuItem_activate(widget)
@@ -202,9 +219,12 @@ class CMergerUI:
         filter.add_pattern("*.c")
         self.builder.get_object("fileChooserOfFirst").add_filter(filter)
         self.builder.get_object("fileChooserOfSecond").add_filter(filter)
-        addTags(self.builder.get_object("codeViewOfFirst"))
-        addTags(self.builder.get_object("codeViewOfSecond"))
-        addTags(self.builder.get_object("codeViewOfMerged"))
+        self.firstCodeView = self.builder.get_object("codeViewOfFirst")
+        self.secondCodeView = self.builder.get_object("codeViewOfSecond")
+        self.mergerCodeView = self.builder.get_object("codeViewOfMerged")
+        addTags(self.firstCodeView)
+        addTags(self.secondCodeView)
+        addTags(self.mergerCodeView)
 
         self.window.show()
 
