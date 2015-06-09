@@ -16,6 +16,10 @@
 
 #define ABC
 
+
+
+
+
 void usage() {
 	printf("[nazwa][pid_do ktorego przesle][kill/queue][opcjonalnie-dla-queue-ilosc]\n");
 }
@@ -54,10 +58,6 @@ int main(int argc, char *argv[]) {
 	}
 	return EXIT_SUCCESS;
 }
-
-
-
-
 
 
 

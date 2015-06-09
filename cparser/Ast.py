@@ -10,7 +10,7 @@ class Unit(object):
 
     def __eq__(self, other):
         if isinstance(other, Unit):
-            return self.line == other.line
+            return self.line.lstrip() == other.line.lstrip()
         return False
 
     def getThis(self, line):

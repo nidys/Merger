@@ -46,4 +46,4 @@ class LiteralParser(object):
                 code = tmpCode
                 continue
 
-            code = skipToAfterNextLine(self.lines, code)
+            code = skipNextLines(self.lines, code)
